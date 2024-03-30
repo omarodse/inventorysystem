@@ -15,6 +15,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainFormController implements Initializable {
+    public Button modifyPartButton;
     @FXML
     private Button addPartButton;
 
@@ -23,8 +24,9 @@ public class MainFormController implements Initializable {
 
     }
 
-    public void onAddPartButton(ActionEvent actionEvent) throws IOException {
-        URL fxmlLocation = getClass().getResource("/wgu/inventoryfxmlapp/AddPartForm.fxml");
+    //Helper method to parse the FXML file and stage the window
+    public void getWindow(String source, String title, Button button, int width, int height) throws IOException {
+        URL fxmlLocation = getClass().getResource(source);
         if (fxmlLocation == null) {
             // Log an error or show an alert to the user
             System.err.println("FXML file not found");
@@ -32,10 +34,17 @@ public class MainFormController implements Initializable {
         }
 
         Parent root = FXMLLoader.load(fxmlLocation);
-        Stage stage = (Stage) addPartButton.getScene().getWindow();
-        Scene scene = new Scene(root, 600, 600);
-        stage.setTitle("Add Part Form");
+        Stage stage = (Stage) button.getScene().getWindow();
+        Scene scene = new Scene(root, width, height);
+        stage.setTitle(title);
         stage.setScene(scene);
         stage.show();
+    }
+    public void onAddPartButton(ActionEvent actionEvent) throws IOException {
+        getWindow("/wgu/inventoryfxmlapp/AddPartForm.fxml", "Add Part Form", addPartButton, 600, 600);
+    }
+
+    public void onModifyPart(ActionEvent actionEvent) throws IOException {
+        getWindow("/wgu/inventoryfxmlapp/ModifyPartForm.fxml", "Modify Part Form", modifyPartButton, 600, 600);
     }
 }
