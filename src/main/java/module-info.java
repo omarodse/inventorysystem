@@ -7,4 +7,5 @@ module wgu.inventoryfxmlapp {
     exports wgu.inventoryfxmlapp;
     exports controller;
     opens controller to javafx.fxml;
+    opens model to javafx.fxml, javafx.base;
 }

@@ -7,7 +7,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
             prefWidth="1000.0" style="-fx-background-color: #cdcdcd;" xmlns="http://javafx.com/javafx/17.0.2-ea"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AddPartFormController">
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AddProductFormController">
    <Pane style="-fx-border-color: #000; -fx-border-radius: 10;" AnchorPane.bottomAnchor="30.0"
          AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="30.0">
       <VBox prefHeight="540.0" prefWidth="940.0">

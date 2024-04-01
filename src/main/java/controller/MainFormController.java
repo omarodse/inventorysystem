@@ -1,5 +1,7 @@
 package controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,7 +10,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import model.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -16,11 +22,35 @@ import java.util.ResourceBundle;
 
 public class MainFormController implements Initializable {
     public Button modifyPartButton;
+    public TableView allPartsTable;
+    public TableColumn partId;
+    public TableColumn partName;
+    public TableColumn inventoryLevel;
+    public TableColumn partPriceCost;
+    public TableView allProductsTable;
+    public TableColumn productId;
+    public TableColumn productName;
+    public TableColumn productInventoryLevel;
+    public TableColumn productPriceCost;
+
     @FXML
     private Button addPartButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        allPartsTable.setItems(Inventory.getAllParts());
+        allProductsTable.setItems(Inventory.getAllProducts());
+
+        partId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        partName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        inventoryLevel.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        partPriceCost.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+        productId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        productName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        productInventoryLevel.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        productPriceCost.setCellValueFactory(new PropertyValueFactory<>("price"));
 
     }
 
