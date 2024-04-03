@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,11 +9,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import model.*;
 
@@ -22,16 +21,25 @@ import java.util.ResourceBundle;
 
 public class MainFormController implements Initializable {
     public Button modifyPartButton;
-    public TableView allPartsTable;
+    public TableView<Part> allPartsTable;
     public TableColumn partId;
     public TableColumn partName;
     public TableColumn inventoryLevel;
     public TableColumn partPriceCost;
-    public TableView allProductsTable;
+    public TableView<Product> allProductsTable;
     public TableColumn productId;
     public TableColumn productName;
     public TableColumn productInventoryLevel;
     public TableColumn productPriceCost;
+    public Button deletePartButton;
+    public Button searchPartButton;
+    public Button searchProduct;
+    public TextField partTextField;
+    public Button addProductButton;
+    public Button modifyProductButton;
+    public Button deleteProduct;
+    public TextField productTextField;
+    public Button exitButton;
 
     @FXML
     private Button addPartButton;
@@ -55,8 +63,8 @@ public class MainFormController implements Initializable {
     }
 
     //Helper method to parse the FXML file and stage the window
-    public void getWindow(String source, String title, Button button, int width, int height) throws IOException {
-        URL fxmlLocation = getClass().getResource(source);
+    public static void getWindow(String source, String title, Button button, int width, int height) throws IOException {
+        URL fxmlLocation = MainFormController.class.getResource(source);
         if (fxmlLocation == null) {
             // Log an error or show an alert to the user
             System.err.println("FXML file not found");
@@ -76,5 +84,101 @@ public class MainFormController implements Initializable {
 
     public void onModifyPart(ActionEvent actionEvent) throws IOException {
         getWindow("/wgu/inventoryfxmlapp/ModifyPartForm.fxml", "Modify Part Form", modifyPartButton, 600, 600);
+    }
+
+    public void onPartSearch(KeyEvent keyEvent) {
+
+    }
+
+    public void onDeletePart(ActionEvent actionEvent) {
+        Part selectedItem = allPartsTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected item?", ButtonType.YES, ButtonType.NO);
+            alert.showAndWait();
+
+            if (alert.getResult() == ButtonType.YES) {
+                Inventory.deletePart(selectedItem);
+            }
+        } else {
+            System.out.println("No item selected");
+        }
+    }
+
+    public void onSearchPart(ActionEvent actionEvent) {
+        String partName = partTextField.getText();
+        ObservableList<Part> parts = Inventory.lookupPart(partName);
+
+        if(parts.size() == 0) {
+            try {
+                int id = Integer.parseInt(partName);
+                Part part = Inventory.lookupPart(id);
+                if (part != null) {
+                    parts.add(part);
+                } else {
+                    allPartsTable.setItems(parts);
+                    allPartsTable.setPlaceholder(new Label("No part found"));
+                    return;
+                }
+            }
+            catch(NumberFormatException e) {
+                allPartsTable.setItems(parts);
+                allPartsTable.setPlaceholder(new Label("No part found"));
+                }
+            }
+
+        allPartsTable.setItems(parts);
+        partTextField.setText("");
+    }
+
+    public void onSearchProduct(ActionEvent actionEvent) {
+        String productName = productTextField.getText();
+        ObservableList<Product> products = Inventory.lookupProduct(productName);
+
+        if(products.size() == 0) {
+            try {
+                int id = Integer.parseInt(productName);
+                Product product = Inventory.lookupProduct(id);
+                if (product != null) {
+                    products.add(product);
+                } else {
+                    allProductsTable.setItems(products);
+                    allProductsTable.setPlaceholder(new Label("No product found"));
+                    return;
+                }
+            }
+            catch(NumberFormatException e) {
+                allProductsTable.setItems(products);
+                allProductsTable.setPlaceholder(new Label("No product found"));
+            }
+        }
+
+        allProductsTable.setItems(products);
+        productTextField.setText("");
+    }
+
+    public void onAddProduct(ActionEvent actionEvent) throws IOException {
+        getWindow("/wgu/inventoryfxmlapp/AddProductForm.fxml", "Add Product Form", addProductButton, 1000, 600);
+    }
+
+    public void onDeleteProduct(ActionEvent actionEvent) {
+        Product selectedItem = allProductsTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected item?", ButtonType.YES, ButtonType.NO);
+            alert.showAndWait();
+
+            if (alert.getResult() == ButtonType.YES) {
+                Inventory.deleteProduct(selectedItem);
+            }
+        } else {
+            System.out.println("No item selected");
+        }
+    }
+
+    public void onModifyProduct(ActionEvent actionEvent) throws IOException {
+        getWindow("/wgu/inventoryfxmlapp/ModifyProductForm.fxml", "Modify Product Form", modifyProductButton, 1000, 600);
+    }
+
+    public void onExitButton(ActionEvent actionEvent) {
+        Platform.exit();
     }
 }
