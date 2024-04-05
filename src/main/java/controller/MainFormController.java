@@ -17,7 +17,10 @@ import model.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 public class MainFormController implements Initializable {
     public Button modifyPartButton;
@@ -40,7 +43,8 @@ public class MainFormController implements Initializable {
     public Button deleteProduct;
     public TextField productTextField;
     public Button exitButton;
-
+    private final static Random random = new Random();
+    private final static Set<Integer> usedIds = new HashSet<>();
     @FXML
     private Button addPartButton;
 
@@ -78,16 +82,76 @@ public class MainFormController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
+
+    //overload getWindow to pass a Part
+    public static void getWindow(String source, String title, Button button, int width, int height, Part selectedItem) throws IOException {
+        FXMLLoader loader = new FXMLLoader(MainFormController.class.getResource(source));
+        Parent root = loader.load();
+
+        if (selectedItem != null) {
+            Object controller = loader.getController();
+            if (controller instanceof ModifyPartFormController) {
+                ((ModifyPartFormController) controller).populateForm(selectedItem);
+            }
+        }
+
+        Stage stage = (Stage) button.getScene().getWindow();
+        stage.setTitle(title);
+        Scene scene = new Scene(root, width, height);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static int generateUniqueId() {
+        while (true) {
+            int id = 100 + random.nextInt(900);
+            if (!usedIds.contains(id)) {
+                usedIds.add(id);
+                return id;
+            }
+        }
+    }
+
+    // Method to check invalid inputs
+    public boolean checkValues(int min, int max, int inStock) {
+        if (max < min) {
+            showAlert(Alert.AlertType.ERROR, "Maximum must be greater than minimum.");
+            return false; // Indicates failure
+        }
+        if (inStock < min || max < inStock) {
+            showAlert(Alert.AlertType.ERROR, "Inventory must be within min and max.");
+            return false; // Indicates failure
+        }
+        return true; // Indicates success
+    }
+
+    private void showAlert(Alert.AlertType alertType, String content) {
+        Alert alert = new Alert(alertType, content);
+        alert.showAndWait();
+    }
+
+    //method to get the current index
+    public static int getIndex(int partId) {
+        int index = 0;
+
+        ObservableList<Part> parts = Inventory.getAllParts();
+        for (int i = 0; i < parts.size(); i++) {
+            if (parts.get(i).getId() == partId) {
+                return i; // Return the index of the found part
+            }
+        }
+        return -1; // Return -1 if not found
+    }
+
     public void onAddPartButton(ActionEvent actionEvent) throws IOException {
         getWindow("/wgu/inventoryfxmlapp/AddPartForm.fxml", "Add Part Form", addPartButton, 600, 600);
     }
 
     public void onModifyPart(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/ModifyPartForm.fxml", "Modify Part Form", modifyPartButton, 600, 600);
-    }
-
-    public void onPartSearch(KeyEvent keyEvent) {
-
+        Part selectedItem = allPartsTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null) {
+            getWindow("/wgu/inventoryfxmlapp/ModifyPartForm.fxml", "Modify Part Form", modifyPartButton, 600, 600, selectedItem);
+        }
     }
 
     public void onDeletePart(ActionEvent actionEvent) {
@@ -100,7 +164,8 @@ public class MainFormController implements Initializable {
                 Inventory.deletePart(selectedItem);
             }
         } else {
-            System.out.println("No item selected");
+            Alert alert = new Alert(Alert.AlertType.WARNING,"No item selected");
+            alert.showAndWait();
         }
     }
 

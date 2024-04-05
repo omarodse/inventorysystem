@@ -34,7 +34,7 @@
                            <Insets right="110.0" />
                         </HBox.margin>
                      </Label>
-                     <TextField fx:id="partTextField" onKeyPressed="#onPartSearch" promptText="Search by part ID or number" style="-fx-border-color: #808080; -fx-border-radius: 5;">
+                     <TextField fx:id="partTextField" promptText="Search by part ID or number" style="-fx-border-color: #808080; -fx-border-radius: 5;">
                         <HBox.margin>
                            <Insets />
                         </HBox.margin></TextField>

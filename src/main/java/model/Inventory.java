@@ -27,6 +27,11 @@ public class Inventory {
         return false;
     }
 
+    //+ updatePart(index:int, selectedPart:Part):void
+    public static void updatePart(int index, Part selectedPart) {
+        allParts.set(index, selectedPart);
+    }
+
     public static boolean deleteProduct(Product selectedProduct) {
         int selectedPartId = selectedProduct.getId();
         for(Product product: allProducts) {
