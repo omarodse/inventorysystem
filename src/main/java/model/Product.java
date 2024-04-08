@@ -22,25 +22,12 @@ public class Product {
         this.max = max;
     }
 
-    /**
-     * @return the id
-     */
-    public int getId() {
-        return id;
-    }
 
     /**
      * @param id the id to set
      */
     public void setId(int id) {
         this.id = id;
-    }
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -51,24 +38,10 @@ public class Product {
     }
 
     /**
-     * @return the price
-     */
-    public double getPrice() {
-        return price;
-    }
-
-    /**
      * @param price the price to set
      */
     public void setPrice(double price) {
         this.price = price;
-    }
-
-    /**
-     * @return the stock
-     */
-    public int getStock() {
-        return stock;
     }
 
     /**
@@ -79,17 +52,52 @@ public class Product {
     }
 
     /**
-     * @return the min
-     */
-    public int getMin() {
-        return min;
-    }
-
-    /**
      * @param min the min to set
      */
     public void setMin(int min) {
         this.min = min;
+    }
+
+    /**
+     * @param max the max to set
+     */
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return the price
+     */
+    public double getPrice() {
+        return price;
+    }
+
+    /**
+     * @return the stock
+     */
+    public int getStock() {
+        return stock;
+    }
+
+    /**
+     * @return the min
+     */
+    public int getMin() {
+        return min;
     }
 
     /**
@@ -99,11 +107,19 @@ public class Product {
         return max;
     }
 
-    /**
-     * @param max the max to set
-     */
-    public void setMax(int max) {
-        this.max = max;
+    // Add associated part
+    public void addAssociatedPart(Part part) {
+        associatedParts.add(part);
+    }
+
+    // Delete an associated part
+    public void deletedAssociatedPart(Part selectedAssociatedPart) {
+        associatedParts.remove(selectedAssociatedPart);
+    }
+
+    // Get associated parts
+    public ObservableList<Part> getAllAssociatedParts() {
+        return this.associatedParts;
     }
 
 }

@@ -102,6 +102,26 @@ public class MainFormController implements Initializable {
         stage.show();
     }
 
+    //overload getWindow to pass a Product
+    public static void getWindow(String source, String title, Button button, int width, int height, Product selectedItem) throws IOException {
+        FXMLLoader loader = new FXMLLoader(MainFormController.class.getResource(source));
+        Parent root = loader.load();
+
+        if (selectedItem != null) {
+            System.out.println("This is working");
+            Object controller = loader.getController();
+            if (controller instanceof ModifyProductFormController) {
+                ((ModifyProductFormController) controller).populateForm(selectedItem);
+            }
+        }
+
+        Stage stage = (Stage) button.getScene().getWindow();
+        stage.setTitle(title);
+        Scene scene = new Scene(root, width, height);
+        stage.setScene(scene);
+        stage.show();
+    }
+
     public static int generateUniqueId() {
         while (true) {
             int id = 100 + random.nextInt(900);
@@ -112,8 +132,13 @@ public class MainFormController implements Initializable {
         }
     }
 
+    private static void showAlert(Alert.AlertType alertType, String content) {
+        Alert alert = new Alert(alertType, content);
+        alert.showAndWait();
+    }
+
     // Method to check invalid inputs
-    public boolean checkValues(int min, int max, int inStock) {
+    public static boolean checkValues(int min, int max, int inStock) {
         if (max < min) {
             showAlert(Alert.AlertType.ERROR, "Maximum must be greater than minimum.");
             return false; // Indicates failure
@@ -125,13 +150,8 @@ public class MainFormController implements Initializable {
         return true; // Indicates success
     }
 
-    private void showAlert(Alert.AlertType alertType, String content) {
-        Alert alert = new Alert(alertType, content);
-        alert.showAndWait();
-    }
-
     //method to get the current index
-    public static int getIndex(int partId) {
+    public static int getPartIndex(int partId) {
         int index = 0;
 
         ObservableList<Part> parts = Inventory.getAllParts();
@@ -143,6 +163,18 @@ public class MainFormController implements Initializable {
         return -1; // Return -1 if not found
     }
 
+    //method to get the current index
+    public static int getProductIndex(int productId) {
+        int index = 0;
+
+        ObservableList<Product> products = Inventory.getAllProducts();
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getId() == productId) {
+                return i; // Return the index of the found part
+            }
+        }
+        return -1; // Return -1 if not found
+    }
     public void onAddPartButton(ActionEvent actionEvent) throws IOException {
         getWindow("/wgu/inventoryfxmlapp/AddPartForm.fxml", "Add Part Form", addPartButton, 600, 600);
     }
@@ -151,6 +183,14 @@ public class MainFormController implements Initializable {
         Part selectedItem = allPartsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
             getWindow("/wgu/inventoryfxmlapp/ModifyPartForm.fxml", "Modify Part Form", modifyPartButton, 600, 600, selectedItem);
+        } else if(allPartsTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No parts in inventory");
+            alert.setContentText("Please add parts");
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING,"No item selected");
+            alert.showAndWait();
         }
     }
 
@@ -163,6 +203,11 @@ public class MainFormController implements Initializable {
             if (alert.getResult() == ButtonType.YES) {
                 Inventory.deletePart(selectedItem);
             }
+        } else if(allPartsTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No parts in inventory");
+            alert.setContentText("Please add parts");
+            alert.showAndWait();
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING,"No item selected");
             alert.showAndWait();
@@ -228,19 +273,45 @@ public class MainFormController implements Initializable {
     public void onDeleteProduct(ActionEvent actionEvent) {
         Product selectedItem = allProductsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
+            ObservableList<Part> associatedParts = selectedItem.getAllAssociatedParts();
+            System.out.println(associatedParts);
+            if(associatedParts.size() > 0) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Product has associated parts");
+                alert.setContentText("Please remove the parts before deleting the product");
+                alert.showAndWait();
+                return;
+            }
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected item?", ButtonType.YES, ButtonType.NO);
             alert.showAndWait();
 
             if (alert.getResult() == ButtonType.YES) {
                 Inventory.deleteProduct(selectedItem);
             }
+        } else if(allProductsTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No products in inventory");
+            alert.setContentText("Please add products");
+            alert.showAndWait();
         } else {
-            System.out.println("No item selected");
+            Alert alert = new Alert(Alert.AlertType.WARNING,"No item selected");
+            alert.showAndWait();
         }
     }
 
     public void onModifyProduct(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/ModifyProductForm.fxml", "Modify Product Form", modifyProductButton, 1000, 600);
+        Product selectedItem = allProductsTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null) {
+            getWindow("/wgu/inventoryfxmlapp/ModifyProductForm.fxml", "Modify Product Form", modifyProductButton, 1000, 600, selectedItem);
+        } else if(allProductsTable.getItems().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No products in inventory");
+            alert.setContentText("Please add products");
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING,"No item selected");
+            alert.showAndWait();
+        }
     }
 
     public void onExitButton(ActionEvent actionEvent) {

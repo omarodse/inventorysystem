@@ -27,9 +27,12 @@ public class Inventory {
         return false;
     }
 
-    //+ updatePart(index:int, selectedPart:Part):void
     public static void updatePart(int index, Part selectedPart) {
         allParts.set(index, selectedPart);
+    }
+
+    public static void updateProduct(int index, Product selectedProduct) {
+        allProducts.set(index, selectedProduct);
     }
 
     public static boolean deleteProduct(Product selectedProduct) {
@@ -89,16 +92,3 @@ public class Inventory {
     }
 
 }
-
-//+ addPart(newPart:Part):void
-//+ addProduct(newProduct:Product):void
-//+ lookupPart(partId:int):Part
-//+ lookupProduct(productId:int):Product
-//+ lookupPart(partName:String):ObservableList<Part>
-//+ lookupProduct(productName:String):ObservableList<Product>
-//+ updatePart(index:int, selectedPart:Part):void
-//+ updateProduct(index:int, newProduct:Product):void
-//+ deletePart(selectedPart:Part):boolean
-//+ deleteProduct(selectedProduct:Product):boolean
-//+ getAllParts():ObservableList<Part>
-//+ getAllProducts():ObservableList<Product>

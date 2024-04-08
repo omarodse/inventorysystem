@@ -23,7 +23,7 @@
                   <Insets top="40.0" />
                </HBox.margin>
             </Label>
-            <TextField prefHeight="26.0" prefWidth="170.0" promptText="Search by Part ID or Name">
+            <TextField fx:id="addProductFormSearch" onKeyPressed="#onProductFormSearch" prefHeight="26.0" prefWidth="170.0" promptText="Search by Part ID or Name">
                <HBox.margin>
                   <Insets top="20.0" />
                </HBox.margin>
@@ -55,37 +55,37 @@
                <Label text="Inv" GridPane.rowIndex="2" />
                <Label text="Price" GridPane.rowIndex="3" />
                <Label text="Max" GridPane.rowIndex="4" />
-               <TextField disable="true" promptText="Auto Gen - Disabled" style="-fx-border-radius: 5;" GridPane.columnIndex="1" />
-               <TextField style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-               <TextField style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-               <TextField style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-               <TextField style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-               <TextField prefHeight="26.0" prefWidth="89.0" style="-fx-border-radius: 5;" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+               <TextField fx:id="addProductId" disable="true" promptText="Auto Gen - Disabled" style="-fx-border-radius: 5;" GridPane.columnIndex="1" />
+               <TextField fx:id="addProductName" style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               <TextField fx:id="addProductInventory" style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+               <TextField fx:id="addProductPrice" style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               <TextField fx:id="addProductMax" style="-fx-border-radius: 5;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+               <TextField fx:id="addProductMin" prefHeight="26.0" prefWidth="89.0" style="-fx-border-radius: 5;" GridPane.columnIndex="3" GridPane.rowIndex="4" />
                <Label text="Min" GridPane.columnIndex="2" GridPane.rowIndex="4" />
             </GridPane>
             <VBox alignment="TOP_RIGHT">
                <HBox.margin>
                   <Insets left="10.0" right="5.0" />
                </HBox.margin>
-               <TableView maxHeight="-Infinity" prefHeight="160.0" prefWidth="399.0" style="-fx-border-color: #ADD8E6; -fx-border-width: 3;">
+               <TableView fx:id="allPartsTable" maxHeight="-Infinity" prefHeight="160.0" prefWidth="399.0" style="-fx-border-color: #ADD8E6; -fx-border-width: 3;">
                   <columns>
-                     <TableColumn prefWidth="54.1999831199646" text="Part ID" />
-                     <TableColumn prefWidth="78.79999542236328" text="Part Name" />
-                     <TableColumn prefWidth="100.20001220703125" text="Inventory Level " />
-                     <TableColumn prefWidth="145.0" text="Price/ Cost per Unit" />
+                     <TableColumn fx:id="partId" prefWidth="54.1999831199646" text="Part ID" />
+                     <TableColumn fx:id="partName" prefWidth="78.79999542236328" text="Part Name" />
+                     <TableColumn fx:id="inventoryLevel" prefWidth="100.20001220703125" text="Inventory Level " />
+                     <TableColumn fx:id="partPriceCost" prefWidth="145.0" text="Price/ Cost per Unit" />
                   </columns>
                </TableView>
-               <Button mnemonicParsing="false" text="Add">
+               <Button fx:id="addAssociatedPartButton" mnemonicParsing="false" onAction="#onAddAssociatedPart" text="Add">
                   <VBox.margin>
                      <Insets right="30.0" top="20.0" />
                   </VBox.margin>
                </Button>
-               <TableView layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" prefHeight="146.0" prefWidth="399.0" style="-fx-border-color: #ADD8E6; -fx-border-width: 3;">
+               <TableView fx:id="associatedPartsTable" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" prefHeight="146.0" prefWidth="399.0" style="-fx-border-color: #ADD8E6; -fx-border-width: 3;">
                   <columns>
-                     <TableColumn prefWidth="54.1999831199646" text="Part ID" />
-                     <TableColumn prefWidth="78.79999542236328" text="Part Name" />
-                     <TableColumn prefWidth="100.20001220703125" text="Inventory Level " />
-                     <TableColumn prefWidth="145.0" text="Price/ Cost per Unit" />
+                     <TableColumn fx:id="associatedPartId" prefWidth="54.1999831199646" text="Part ID" />
+                     <TableColumn fx:id="associatedPartName" prefWidth="78.79999542236328" text="Part Name" />
+                     <TableColumn fx:id="associatedInventory" prefWidth="100.20001220703125" text="Inventory Level " />
+                     <TableColumn fx:id="associatedPrice" prefWidth="145.0" text="Price/ Cost per Unit" />
                   </columns>
                   <VBox.margin>
                      <Insets top="25.0" />
@@ -97,12 +97,12 @@
             <VBox.margin>
                <Insets right="50.0" top="10.0" />
             </VBox.margin>
-            <Button mnemonicParsing="false" text="Remove Associated Part" />
+            <Button fx:id="removeAssociatedPartButton" mnemonicParsing="false" onAction="#onRemoveAssociatedPart" text="Remove Associated Part" />
             <HBox alignment="TOP_RIGHT" prefHeight="233.0" prefWidth="940.0" spacing="50.0">
                <padding>
                   <Insets top="10.0" />
                </padding>
-               <Button mnemonicParsing="false" text="Save" />
+               <Button fx:id="saveAddProduct" mnemonicParsing="false" onAction="#onSaveAddProduct" text="Save" />
                <Button fx:id="cancelAddProduct" mnemonicParsing="false" onAction="#onCancelAddProduct" text="Cancel" />
             </HBox>
          </VBox>

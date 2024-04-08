@@ -4,10 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import model.InHouse;
-import model.Inventory;
-import model.OutSourced;
-import model.Part;
+import model.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -48,7 +45,6 @@ public class ModifyPartFormController extends MainFormController implements Init
     }
 
     public void populateForm(Part part) {
-        boolean outSourced = false;
         if(part instanceof OutSourced) {
             outSourcedRadioButton.setSelected(true);
             machineCompany.setText("Company Name");
@@ -82,7 +78,7 @@ public class ModifyPartFormController extends MainFormController implements Init
             String companyName;
 
             // get the current index
-            int currentIndex = getIndex(partId);
+            int currentIndex = getPartIndex(partId);
 
             // check invalid inputs
             if (!checkValues(min, max, inv)) {
