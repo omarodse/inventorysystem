@@ -26,11 +26,6 @@ public class ModifyPartFormController extends MainFormController implements Init
     @FXML
     private Label welcomeText;
 
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -63,7 +58,7 @@ public class ModifyPartFormController extends MainFormController implements Init
     }
 
     public void onModifyPartCancel(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", modifyPartCancelButton, 1000, 379);
+        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", modifyPartCancelButton);
     }
 
     public void onModifyPartSave(ActionEvent actionEvent) throws IOException {
@@ -74,38 +69,50 @@ public class ModifyPartFormController extends MainFormController implements Init
             double price = Double.parseDouble(modifyPriceCost.getText());
             int max = Integer.parseInt(modifyMax.getText());
             int min = Integer.parseInt(modifyMin.getText());
-            int machineId;
-            String companyName;
 
             // get the current index
             int currentIndex = getPartIndex(partId);
 
             // check invalid inputs
-            if (!checkValues(min, max, inv)) {
+            if (!checkValues(min, max, inv, price)) {
                 return; // Exit the calling method
             }
 
+            Part existingPart = Inventory.lookupPart(partId);
+
+            // Updating fields
+            existingPart.setName(partName);
+            existingPart.setPrice(price);
+            existingPart.setStock(inv);
+            existingPart.setMax(max);
+            existingPart.setMin(min);
+
             // check if InHouse or OutSourced to change to Machine ID or Company Name
-            if(inHouseRadioButton.isSelected()) {
-                machineId = Integer.parseInt(ModifyMachineCompany.getText());
-                InHouse newPart = new InHouse(partId, partName, price, inv, min, max, machineId);
-                Inventory.updatePart(currentIndex, newPart);
-            } else {
-                companyName = ModifyMachineCompany.getText();
-                OutSourced newPart = new OutSourced(partId, partName, price, inv, min, max, companyName);
-                Inventory.updatePart(currentIndex, newPart);
+            if (existingPart instanceof InHouse) {
+                int machineId = Integer.parseInt(ModifyMachineCompany.getText());
+                InHouse inHousePart = (InHouse) existingPart;
+                inHousePart.setMachineId(machineId);
+            } else if (existingPart instanceof OutSourced) {
+                String companyName = ModifyMachineCompany.getText();
+                OutSourced outSourcedPart = (OutSourced) existingPart;
+                outSourcedPart.setCompanyName(companyName);
             }
+
+            Inventory.updatePart(currentIndex, existingPart);
+            Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+            confirmationAlert.setTitle("Update Successful");
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.setContentText("The part has been successfully updated.");
+            confirmationAlert.showAndWait();
+
+            // Go back to the main screen
+            getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Save Part", modifyPartSave);
 
         } catch(NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setContentText("Invalid Input");
             alert.showAndWait();
-            return;
         }
-
-        // Go back to the main screen
-        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Save Part", modifyPartSave, 1000, 379);
-
     }
 }

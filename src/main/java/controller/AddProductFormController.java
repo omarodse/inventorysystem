@@ -23,17 +23,17 @@ public class AddProductFormController implements Initializable {
     public Button cancelAddProduct;
     public Button saveAddProduct;
     public TableView<Part> allPartsTable;
-    public TableColumn partId;
-    public TableColumn partName;
-    public TableColumn inventoryLevel;
-    public TableColumn partPriceCost;
+    public TableColumn<Part, Integer> partId;
+    public TableColumn<Part, String> partName;
+    public TableColumn<Part, Integer> inventoryLevel;
+    public TableColumn<Part, Double> partPriceCost;
     public Button addAssociatedPartButton;
     public TextField addProductFormSearch;
     public TableView<Part> associatedPartsTable;
-    public TableColumn associatedPartId;
-    public TableColumn associatedPartName;
-    public TableColumn associatedInventory;
-    public TableColumn associatedPrice;
+    public TableColumn<Part, Integer> associatedPartId;
+    public TableColumn<Part, String> associatedPartName;
+    public TableColumn<Part, Integer> associatedInventory;
+    public TableColumn<Part, Double> associatedPrice;
     public TextField addProductId;
     public TextField addProductName;
     public TextField addProductInventory;
@@ -56,7 +56,7 @@ public class AddProductFormController implements Initializable {
     }
 
     public void onCancelAddProduct(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", cancelAddProduct, 1000, 379);
+        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Product Form", cancelAddProduct);
     }
 
     public void onSaveAddProduct(ActionEvent actionEvent) throws IOException {
@@ -69,7 +69,7 @@ public class AddProductFormController implements Initializable {
             int min = Integer.parseInt(addProductMin.getText());
 
             // check invalid inputs
-            if (!checkValues(min, max, inv)) {
+            if (!checkValues(min, max, inv, price)) {
                 return; // Exit the calling method
             }
 
@@ -82,12 +82,17 @@ public class AddProductFormController implements Initializable {
 
             // add the new product to the inventory
             Inventory.addProduct(newProduct);
+            Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+            confirmationAlert.setTitle("Product added");
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.setContentText("The product has been successfully added.");
+            confirmationAlert.showAndWait();
 
             // clear the bottom table
             bottomTable.clear();
 
             // go back to the main screen
-            getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", saveAddProduct, 1000, 379);
+            getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", saveAddProduct);
 
         } catch(NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

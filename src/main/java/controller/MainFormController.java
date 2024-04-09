@@ -67,7 +67,7 @@ public class MainFormController implements Initializable {
     }
 
     //Helper method to parse the FXML file and stage the window
-    public static void getWindow(String source, String title, Button button, int width, int height) throws IOException {
+    public static void getWindow(String source, String title, Button button) throws IOException {
         URL fxmlLocation = MainFormController.class.getResource(source);
         if (fxmlLocation == null) {
             // Log an error or show an alert to the user
@@ -77,14 +77,14 @@ public class MainFormController implements Initializable {
 
         Parent root = FXMLLoader.load(fxmlLocation);
         Stage stage = (Stage) button.getScene().getWindow();
-        Scene scene = new Scene(root, width, height);
+        Scene scene = new Scene(root);
         stage.setTitle(title);
         stage.setScene(scene);
         stage.show();
     }
 
     //overload getWindow to pass a Part
-    public static void getWindow(String source, String title, Button button, int width, int height, Part selectedItem) throws IOException {
+    public static void getWindow(String source, String title, Button button, Part selectedItem) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainFormController.class.getResource(source));
         Parent root = loader.load();
 
@@ -97,13 +97,13 @@ public class MainFormController implements Initializable {
 
         Stage stage = (Stage) button.getScene().getWindow();
         stage.setTitle(title);
-        Scene scene = new Scene(root, width, height);
+        Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
 
     //overload getWindow to pass a Product
-    public static void getWindow(String source, String title, Button button, int width, int height, Product selectedItem) throws IOException {
+    public static void getWindow(String source, String title, Button button, Product selectedItem) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainFormController.class.getResource(source));
         Parent root = loader.load();
 
@@ -117,7 +117,7 @@ public class MainFormController implements Initializable {
 
         Stage stage = (Stage) button.getScene().getWindow();
         stage.setTitle(title);
-        Scene scene = new Scene(root, width, height);
+        Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
@@ -138,16 +138,20 @@ public class MainFormController implements Initializable {
     }
 
     // Method to check invalid inputs
-    public static boolean checkValues(int min, int max, int inStock) {
+    public static boolean checkValues(int min, int max, int inStock, Double price) {
+        if(min < 0 || max < 0 || inStock < 0 || price < 0){
+            showAlert(Alert.AlertType.ERROR, "Negative numbers are not accepted");
+            return false;
+        }
         if (max < min) {
             showAlert(Alert.AlertType.ERROR, "Maximum must be greater than minimum.");
-            return false; // Indicates failure
+            return false;
         }
         if (inStock < min || max < inStock) {
             showAlert(Alert.AlertType.ERROR, "Inventory must be within min and max.");
-            return false; // Indicates failure
+            return false;
         }
-        return true; // Indicates success
+        return true;
     }
 
     //method to get the current index
@@ -176,13 +180,13 @@ public class MainFormController implements Initializable {
         return -1; // Return -1 if not found
     }
     public void onAddPartButton(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/AddPartForm.fxml", "Add Part Form", addPartButton, 600, 600);
+        getWindow("/wgu/inventoryfxmlapp/AddPartForm.fxml", "Add Part Form", addPartButton);
     }
 
     public void onModifyPart(ActionEvent actionEvent) throws IOException {
         Part selectedItem = allPartsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
-            getWindow("/wgu/inventoryfxmlapp/ModifyPartForm.fxml", "Modify Part Form", modifyPartButton, 600, 600, selectedItem);
+            getWindow("/wgu/inventoryfxmlapp/ModifyPartForm.fxml", "Modify Part Form", modifyPartButton, selectedItem);
         } else if(allPartsTable.getItems().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No parts in inventory");
@@ -267,7 +271,7 @@ public class MainFormController implements Initializable {
     }
 
     public void onAddProduct(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/AddProductForm.fxml", "Add Product Form", addProductButton, 1000, 600);
+        getWindow("/wgu/inventoryfxmlapp/AddProductForm.fxml", "Add Product Form", addProductButton);
     }
 
     public void onDeleteProduct(ActionEvent actionEvent) {
@@ -302,7 +306,7 @@ public class MainFormController implements Initializable {
     public void onModifyProduct(ActionEvent actionEvent) throws IOException {
         Product selectedItem = allProductsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
-            getWindow("/wgu/inventoryfxmlapp/ModifyProductForm.fxml", "Modify Product Form", modifyProductButton, 1000, 600, selectedItem);
+            getWindow("/wgu/inventoryfxmlapp/ModifyProductForm.fxml", "Modify Product Form", modifyProductButton, selectedItem);
         } else if(allProductsTable.getItems().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No products in inventory");

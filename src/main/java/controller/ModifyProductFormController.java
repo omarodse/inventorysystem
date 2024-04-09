@@ -3,10 +3,11 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import model.Inventory;
 import model.Part;
 import model.Product;
@@ -39,6 +40,7 @@ public class ModifyProductFormController implements Initializable {
     public Button modifyProductAddPart;
     public Button modifyProductRemove;
     public Button modifyProductSave;
+    public TextField modifyProductSearch;
     private ObservableList<Part> bottomTable = FXCollections.observableArrayList();
     private ArrayList<Part> addedParts = new ArrayList<>();
 
@@ -77,7 +79,7 @@ public class ModifyProductFormController implements Initializable {
     }
 
     public void onCancelModifyProduct(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", cancelModifyProduct, 1000, 379);
+        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", cancelModifyProduct);
     }
 
     public void onModifyProductAdd(ActionEvent actionEvent) {
@@ -125,7 +127,7 @@ public class ModifyProductFormController implements Initializable {
             int min = Integer.parseInt(modifyProductMin.getText());
 
             // check invalid inputs
-            if (!checkValues(min, max, inv)) {
+            if (!checkValues(min, max, inv, price)) {
                 return; // Exit if validation fails
             }
 
@@ -143,17 +145,51 @@ public class ModifyProductFormController implements Initializable {
                     existingProduct.addAssociatedPart(part);
                 }
             } else {
-                getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", modifyProductSave, 1000, 379);
+                getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", modifyProductSave);
                 return;
             }
 
+            Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+            confirmationAlert.setTitle("Product updated");
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.setContentText("The product has been successfully updated.");
+            confirmationAlert.showAndWait();
+
             addedParts.clear();
 
-            getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", modifyProductSave, 1000, 379);
+            getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", modifyProductSave);
 
         } catch (NumberFormatException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid Input");
             alert.showAndWait();
+        }
+    }
+
+    public void modifyProductSearch(KeyEvent keyEvent) {
+        if(keyEvent.getCode() == KeyCode.ENTER) {
+            String partName = modifyProductSearch.getText();
+            ObservableList<Part> parts = Inventory.lookupPart(partName);
+
+            if(parts.size() == 0) {
+                try {
+                    int id = Integer.parseInt(partName);
+                    Part part = Inventory.lookupPart(id);
+                    if (part != null) {
+                        parts.add(part);
+                    } else {
+                        allPartsTable.setItems(parts);
+                        allPartsTable.setPlaceholder(new Label("No part found"));
+                        return;
+                    }
+                }
+                catch(NumberFormatException e) {
+                    allPartsTable.setItems(parts);
+                    allPartsTable.setPlaceholder(new Label("No part found"));
+                }
+            }
+
+            allPartsTable.setItems(parts);
+            modifyProductSearch.setText("");
         }
     }
 }

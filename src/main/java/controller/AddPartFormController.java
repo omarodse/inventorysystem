@@ -8,7 +8,6 @@ import model.InHouse;
 import model.Inventory;
 import model.OutSourced;
 import model.Part;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -43,7 +42,7 @@ public class AddPartFormController extends MainFormController implements Initial
     }
 
     public void onCancel(ActionEvent actionEvent) throws IOException {
-        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", cancelButton, 1000, 379);
+        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", cancelButton);
     }
 
     public void onSaveAddPart(ActionEvent actionEvent) throws IOException {
@@ -54,34 +53,37 @@ public class AddPartFormController extends MainFormController implements Initial
             double price = Double.parseDouble(addPartPriceField.getText());
             int max = Integer.parseInt(addPartMaxField.getText());
             int min = Integer.parseInt(addPartMinField.getText());
-            int machineId;
-            String companyName;
 
             // check invalid inputs
-            if (!checkValues(min, max, inv)) {
+            if (!checkValues(min, max, inv, price)) {
                 return; // Exit the calling method
             }
 
-            // check if InHouse or OutSourced to change to Machine ID or Company Name
-            if(inHouseRadioButton.isSelected()) {
-                machineId = Integer.parseInt(addPartMachineCompany.getText());
-                InHouse newPart = new InHouse(partId, partName, price, inv, min, max, machineId);
-                Inventory.addPart(newPart);
-            } else {
-                companyName = addPartMachineCompany.getText();
-                OutSourced newPart = new OutSourced(partId, partName, price, inv, min, max, companyName);
-                    }
+            Part newPart = null;
+            if (inHouseRadioButton.isSelected()) {
+                int machineId = Integer.parseInt(addPartMachineCompany.getText());
+                newPart = new InHouse(partId, partName, price, inv, min, max, machineId);
+            } else if (outSourcedRadioButton.isSelected()) {
+                String companyName = addPartMachineCompany.getText();
+                newPart = new OutSourced(partId, partName, price, inv, min, max, companyName);
+            }
 
-            } catch(NumberFormatException e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText("Invalid Input");
-                alert.showAndWait();
-                return;
+            Inventory.addPart(newPart);
+            Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+            confirmationAlert.setTitle("Part added");
+            confirmationAlert.setHeaderText(null);
+            confirmationAlert.setContentText("The part has been successfully added.");
+            confirmationAlert.showAndWait();
+
+            // Go back to the main screen
+            getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", saveAddPart);
+
+        } catch(NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText("Invalid Input");
+            alert.showAndWait();
         }
-
-        // Go back to the main screen
-        getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", cancelButton, 1000, 379);
 
     }
 }
