@@ -12,7 +12,7 @@ import java.io.IOException;
  * <p>
  * This class is responsible for initializing and displaying the primary stage and scene,
  * serving as the entry point for the JavaFX application.
- *
+ *<p>
  * FUTURE ENHANCEMENT: Implement user authentication and authorization functionality.
  * This would involve adding user login screens and user management features,
  * allowing administrators to create, modify, and delete user accounts with different levels of access rights.
@@ -39,10 +39,10 @@ public class App extends Application {
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * <p>
-     * main() serves only as fallback in case the application cannot be launched through deployment
-     * artifacts, e.g., in IDEs with limited FX support. NetBeans ignores main().
-     *
+     * The JavaDocs Folder is located in src/main/java
+     * <p>
      * @param args the command line arguments
+     * <p>
      */
     public static void main(String[] args) {
         launch();

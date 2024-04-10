@@ -131,7 +131,7 @@ public class ModifyProductFormController implements Initializable {
      * RUNTIME ERROR/LOGICAL ERROR: Initially, the method was erroneously removing the part from both the inventory and the
      * table instead of solely from the table. Consequently, the part was removed from the inventory regardless
      * of whether the operation was saved or cancelled.
-     *
+     *<p>
      * SOLUTION: I addressed this issue by eliminating the code responsible for deleting the part from the inventory.
      * Instead, I introduced an removedParts ArrayList to be managed by the Save operation.
      *
