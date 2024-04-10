@@ -15,10 +15,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-
 import static controller.MainFormController.*;
-import static model.Inventory.lookupProduct;
 
+/**
+ * Controller for the Modify Product Form.
+ * <p>
+ * Handles interactions within the Modify Product form, allowing users to update details
+ * for existing products and manage their associated parts.
+ */
 public class ModifyProductFormController implements Initializable {
     public Button cancelModifyProduct;
     public TableView<Part> allPartsTable;
@@ -43,7 +47,15 @@ public class ModifyProductFormController implements Initializable {
     public TextField modifyProductSearch;
     private ObservableList<Part> bottomTable = FXCollections.observableArrayList();
     private ArrayList<Part> addedParts = new ArrayList<>();
+    private ArrayList<Part> removedParts = new ArrayList<>();
 
+    /**
+     * Initializes the controller class. This method is called after the FXML file has been loaded.
+     * It sets up the table columns and their cell value factories for displaying parts and associated parts.
+     *
+     * @param url The location used to resolve relative paths for the root object, or null if unknown.
+     * @param resourceBundle The resources used to localize the root object, or null if not localized.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -63,7 +75,12 @@ public class ModifyProductFormController implements Initializable {
 
     }
 
-    // overloading populateForm to accept a Product
+    /**
+     * Populates the form with the product's current details for modification.
+     * Adjusts the view to display the product's associated parts in the table.
+     *
+     * @param product The product to be modified.
+     */
     public void populateForm(Product product) {
 
         modifyProductId.setText(String.valueOf(product.getId()));
@@ -78,10 +95,22 @@ public class ModifyProductFormController implements Initializable {
 
     }
 
+    /**
+     * Handles the event triggered by the Cancel button click.
+     * Transitions the user back to the Main Form without saving any changes.
+     *
+     * @param actionEvent The event that triggered this action.
+     * @throws IOException If an error occurs while loading the Main Form.
+     */
     public void onCancelModifyProduct(ActionEvent actionEvent) throws IOException {
         getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Add Part Form", cancelModifyProduct);
     }
 
+    /**
+     * Adds the selected part from the all parts table to the list of associated parts for the product being modified.
+     *
+     * @param actionEvent The event that triggered this action.
+     */
     public void onModifyProductAdd(ActionEvent actionEvent) {
         Part selectedItem = allPartsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
@@ -96,6 +125,18 @@ public class ModifyProductFormController implements Initializable {
         }
     }
 
+    /**
+     * Removes the selected part from the list of associated parts for the product being modified.
+     *<P>
+     * RUNTIME ERROR/LOGICAL ERROR: Initially, the method was erroneously removing the part from both the inventory and the
+     * table instead of solely from the table. Consequently, the part was removed from the inventory regardless
+     * of whether the operation was saved or cancelled.
+     *
+     * SOLUTION: I addressed this issue by eliminating the code responsible for deleting the part from the inventory.
+     * Instead, I introduced an removedParts ArrayList to be managed by the Save operation.
+     *
+     * @param actionEvent The event that triggered this action.
+     */
     public void onModifyProductRemove(ActionEvent actionEvent) {
         addedParts.clear();
         Part selectedItem = associatedPartsTable.getSelectionModel().getSelectedItem();
@@ -106,9 +147,7 @@ public class ModifyProductFormController implements Initializable {
 
             if (alert.getResult() == ButtonType.YES) {
                 bottomTable.remove(selectedItem);
-                int productId = Integer.parseInt(modifyProductId.getText());
-                Product product = lookupProduct(productId);
-                product.deletedAssociatedPart(selectedItem);
+                removedParts.add(selectedItem);
             }
 
         } else {
@@ -117,6 +156,13 @@ public class ModifyProductFormController implements Initializable {
         }
     }
 
+    /**
+     * Saves the modifications made to the product and its list of associated parts.
+     * Validates the input fields and updates the product in the inventory.
+     *
+     * @param actionEvent The event that triggered this action.
+     * @throws IOException If an error occurs during the process.
+     */
     public void onModifyProductSave(ActionEvent actionEvent) throws IOException {
         try {
             int productId = Integer.parseInt(modifyProductId.getText());
@@ -144,6 +190,11 @@ public class ModifyProductFormController implements Initializable {
                 for (Part part : addedParts) {
                     existingProduct.addAssociatedPart(part);
                 }
+            }
+            if(removedParts.size() > 0) {
+                for (Part part : removedParts) {
+                    existingProduct.deleteAssociatedPart(part);
+                }
             } else {
                 getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", modifyProductSave);
                 return;
@@ -156,6 +207,7 @@ public class ModifyProductFormController implements Initializable {
             confirmationAlert.showAndWait();
 
             addedParts.clear();
+            removedParts.clear();
 
             getWindow("/wgu/inventoryfxmlapp/MainForm.fxml", "Main Form", modifyProductSave);
 
@@ -165,6 +217,12 @@ public class ModifyProductFormController implements Initializable {
         }
     }
 
+    /**
+     * Searches for parts based on the input in the search field when the Enter key is pressed.
+     * Updates the all parts table to display only parts that match the search criteria.
+     *
+     * @param keyEvent The key event that triggered this action.
+     */
     public void modifyProductSearch(KeyEvent keyEvent) {
         if(keyEvent.getCode() == KeyCode.ENTER) {
             String partName = modifyProductSearch.getText();

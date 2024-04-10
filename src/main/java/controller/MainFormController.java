@@ -1,7 +1,6 @@
 package controller;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +10,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import model.*;
 
@@ -22,6 +20,13 @@ import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+/**
+ * Controller for the main form of the application.
+ * <p>
+ * This class is responsible for handling all user interactions on the main form,
+ * including navigating to add or modify parts/products, deleting parts/products,
+ * and searching through parts/products.
+ */
 public class MainFormController implements Initializable {
     public Button modifyPartButton;
     public TableView<Part> allPartsTable;
@@ -48,6 +53,12 @@ public class MainFormController implements Initializable {
     @FXML
     private Button addPartButton;
 
+    /**
+     * Initializes the controller, setting up the table columns and their cell value factories.
+     *
+     * @param url The location used to resolve relative paths for the root object, or null if unknown.
+     * @param resourceBundle The resources used to localize the root object, or null if not localized.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -66,7 +77,14 @@ public class MainFormController implements Initializable {
 
     }
 
-    //Helper method to parse the FXML file and stage the window
+    /**
+     * Helper method to load and display a new window based on the FXML file specified.
+     *
+     * @param source The path to the FXML file.
+     * @param title The title of the window.
+     * @param button A button from the current window to get the stage.
+     * @throws IOException If loading the FXML file fails.
+     */
     public static void getWindow(String source, String title, Button button) throws IOException {
         URL fxmlLocation = MainFormController.class.getResource(source);
         if (fxmlLocation == null) {
@@ -83,7 +101,15 @@ public class MainFormController implements Initializable {
         stage.show();
     }
 
-    //overload getWindow to pass a Part
+    /**
+     * Helper method to load and display a new window based on the FXML file specified.
+     *
+     * @param source The path to the FXML file.
+     * @param title The title of the window.
+     * @param button A button from the current window to get the stage.
+     * @param selectedItem A Part selected from a table
+     * @throws IOException If loading the FXML file fails.
+     */
     public static void getWindow(String source, String title, Button button, Part selectedItem) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainFormController.class.getResource(source));
         Parent root = loader.load();
@@ -102,7 +128,15 @@ public class MainFormController implements Initializable {
         stage.show();
     }
 
-    //overload getWindow to pass a Product
+    /**
+     * Helper method to load and display a new window based on the FXML file specified.
+     *
+     * @param source The path to the FXML file.
+     * @param title The title of the window.
+     * @param button A button from the current window to get the stage.
+     * @param selectedItem A Product selected from a table
+     * @throws IOException If loading the FXML file fails.
+     */
     public static void getWindow(String source, String title, Button button, Product selectedItem) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainFormController.class.getResource(source));
         Parent root = loader.load();
@@ -122,6 +156,11 @@ public class MainFormController implements Initializable {
         stage.show();
     }
 
+    /**
+     * Generates a unique ID for parts and products.
+     *
+     * @return An integer representing a unique ID.
+     */
     public static int generateUniqueId() {
         while (true) {
             int id = 100 + random.nextInt(900);
@@ -132,12 +171,26 @@ public class MainFormController implements Initializable {
         }
     }
 
+    /**
+     * Displays an alert dialog with the specified content.
+     *
+     * @param alertType The type of alert.
+     * @param content The content message of the alert.
+     */
     private static void showAlert(Alert.AlertType alertType, String content) {
         Alert alert = new Alert(alertType, content);
         alert.showAndWait();
     }
 
-    // Method to check invalid inputs
+    /**
+     * Validates input values for parts and products.
+     *
+     * @param min The minimum value.
+     * @param max The maximum value.
+     * @param inStock The stock level.
+     * @param price The price.
+     * @return true if the values are valid, false otherwise.
+     */
     public static boolean checkValues(int min, int max, int inStock, Double price) {
         if(min < 0 || max < 0 || inStock < 0 || price < 0){
             showAlert(Alert.AlertType.ERROR, "Negative numbers are not accepted");
@@ -154,7 +207,12 @@ public class MainFormController implements Initializable {
         return true;
     }
 
-    //method to get the current index
+    /**
+     * Gets the product's index.
+     *
+     * @param partId Part's ID
+     * @return Part's index, -1 if not found
+     */
     public static int getPartIndex(int partId) {
         int index = 0;
 
@@ -167,7 +225,12 @@ public class MainFormController implements Initializable {
         return -1; // Return -1 if not found
     }
 
-    //method to get the current index
+    /**
+     * Gets the product's index.
+     *
+     * @param productId Products's ID
+     * @return Product's index, -1 if not found
+     */
     public static int getProductIndex(int productId) {
         int index = 0;
 
@@ -179,10 +242,28 @@ public class MainFormController implements Initializable {
         }
         return -1; // Return -1 if not found
     }
+
+    /**
+     * Handles the event when the Add Part button is clicked.
+     * <p>
+     * This method transitions the user to the Add Part form.
+     *
+     * @param actionEvent The event that triggered this action.
+     * @throws IOException If an error occurs during the transition.
+     */
     public void onAddPartButton(ActionEvent actionEvent) throws IOException {
         getWindow("/wgu/inventoryfxmlapp/AddPartForm.fxml", "Add Part Form", addPartButton);
     }
 
+    /**
+     * Handles the event when the Modify Part button is clicked.
+     * <p>
+     * Transitions the user to the Modify Part form for the selected part.
+     * Displays a warning if no part is selected.
+     *
+     * @param actionEvent The event that triggered this action.
+     * @throws IOException If an error occurs during the transition.
+     */
     public void onModifyPart(ActionEvent actionEvent) throws IOException {
         Part selectedItem = allPartsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
@@ -198,6 +279,13 @@ public class MainFormController implements Initializable {
         }
     }
 
+    /**
+     * Handles the event when the Delete Part button is clicked.
+     * <p>
+     * Prompts the user for confirmation before deleting the selected part from the inventory.
+     *
+     * @param actionEvent The event that triggered this action.
+     */
     public void onDeletePart(ActionEvent actionEvent) {
         Part selectedItem = allPartsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
@@ -218,6 +306,13 @@ public class MainFormController implements Initializable {
         }
     }
 
+    /**
+     * Handles part search functionality.
+     * <p>
+     * Searches for parts based on the given input in the part search text field.
+     *
+     * @param actionEvent The event that triggered this action.
+     */
     public void onSearchPart(ActionEvent actionEvent) {
         String partName = partTextField.getText();
         ObservableList<Part> parts = Inventory.lookupPart(partName);
@@ -244,6 +339,13 @@ public class MainFormController implements Initializable {
         partTextField.setText("");
     }
 
+    /**
+     * Handles product search functionality.
+     * <p>
+     * Searches for products based on the given input in the product search text field.
+     *
+     * @param actionEvent The event that triggered this action.
+     */
     public void onSearchProduct(ActionEvent actionEvent) {
         String productName = productTextField.getText();
         ObservableList<Product> products = Inventory.lookupProduct(productName);
@@ -270,10 +372,25 @@ public class MainFormController implements Initializable {
         productTextField.setText("");
     }
 
+    /**
+     * Handles the event when the Add Product button is clicked.
+     * <p>
+     * Transitions the user to the Add Product form.
+     *
+     * @param actionEvent The event that triggered this action.
+     * @throws IOException If an error occurs during the transition.
+     */
     public void onAddProduct(ActionEvent actionEvent) throws IOException {
         getWindow("/wgu/inventoryfxmlapp/AddProductForm.fxml", "Add Product Form", addProductButton);
     }
 
+    /**
+     * Handles the event when the Delete Product button is clicked.
+     * <p>
+     * Prompts the user for confirmation before deleting the selected product from the inventory.
+     *
+     * @param actionEvent The event that triggered this action.
+     */
     public void onDeleteProduct(ActionEvent actionEvent) {
         Product selectedItem = allProductsTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
@@ -303,6 +420,15 @@ public class MainFormController implements Initializable {
         }
     }
 
+    /**
+     * Handles the event when the Modify Product button is clicked.
+     * <p>
+     * Transitions the user to the Modify Product form for the selected product.
+     * Displays a warning if no product is selected.
+     *
+     * @param actionEvent The event that triggered this action.
+     * @throws IOException If an error occurs during the transition.
+     */
     public void onModifyProduct(ActionEvent actionEvent) throws IOException {
         Product selectedItem = allProductsTable.getSelectionModel().getSelectedItem();
         if(selectedItem != null) {
@@ -318,6 +444,13 @@ public class MainFormController implements Initializable {
         }
     }
 
+    /**
+     * Handles the application exit.
+     * <p>
+     * Closes the application when the Exit button is clicked.
+     *
+     * @param actionEvent The event that triggered this action.
+     */
     public void onExitButton(ActionEvent actionEvent) {
         Platform.exit();
     }
