@@ -39,7 +39,7 @@ public class App extends Application {
     /**
      * The main() method is ignored in correctly deployed JavaFX application.
      * <p>
-     * The JavaDocs Folder is located in src/main/java
+     * The Javadoc files are located in inventoryfxmlapp/javadoc
      * <p>
      * @param args the command line arguments
      * <p>
